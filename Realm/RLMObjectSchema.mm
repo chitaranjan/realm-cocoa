@@ -39,10 +39,7 @@ using namespace realm;
 @end
 
 @implementation RLMObjectSchema {
-    // table accessor optimization
-    realm::TableRef _table;
     NSArray *_swiftGenericProperties;
-    std::vector<RLMProperty *> _propertiesInTableOrder;
 }
 
 - (instancetype)initWithClassName:(NSString *)objectClassName objectClass:(Class)objectClass properties:(NSArray *)properties {
@@ -63,7 +60,6 @@ using namespace realm;
 // create property map when setting property array
 -(void)setProperties:(NSArray *)properties {
     _properties = properties;
-    _propertiesInTableOrder.clear();
     [self _propertiesDidChange];
 }
 
@@ -330,28 +326,6 @@ using namespace realm;
     schema.properties = [[NSArray allocWithZone:zone] initWithArray:_properties copyItems:YES];
     schema.computedProperties = [[NSArray allocWithZone:zone] initWithArray:_computedProperties copyItems:YES];
 
-    // _table not copied as it's realm::Group-specific
-    return schema;
-}
-
-- (instancetype)shallowCopy {
-    RLMObjectSchema *schema = [[RLMObjectSchema alloc] init];
-    schema->_objectClass = _objectClass;
-    schema->_className = _className;
-    schema->_objectClass = _objectClass;
-    schema->_accessorClass = _accessorClass;
-    schema->_unmanagedClass = _unmanagedClass;
-    schema->_isSwiftClass = _isSwiftClass;
-
-    // reuse property array, map, and primary key instnaces
-    schema->_properties = _properties;
-    schema->_computedProperties = _computedProperties;
-    schema->_allPropertiesByName = _allPropertiesByName;
-    schema->_primaryKeyProperty = _primaryKeyProperty;
-    schema->_swiftGenericProperties = _swiftGenericProperties;
-    schema->_propertiesInTableOrder = _propertiesInTableOrder;
-
-    // _table not copied as it's realm::Group-specific
     return schema;
 }
 
@@ -379,17 +353,6 @@ using namespace realm;
         [propertiesString appendFormat:@"\t%@\n", [property.description stringByReplacingOccurrencesOfString:@"\n" withString:@"\n\t"]];
     }
     return [NSString stringWithFormat:@"%@ {\n%@}", self.className, propertiesString];
-}
-
-- (realm::Table *)table {
-    if (!_table) {
-        _table = ObjectStore::table_for_object_type(_realm.group, _className.UTF8String);
-    }
-    return _table.get();
-}
-
-- (void)setTable:(realm::Table *)table {
-    _table.reset(table);
 }
 
 - (realm::ObjectSchema)objectStoreCopy {
@@ -441,21 +404,6 @@ using namespace realm;
     schema.unmanagedClass = RLMObject.class;
     
     return schema;
-}
-
-- (RLMProperty *)propertyForTableColumn:(size_t)tableCol {
-    if (_propertiesInTableOrder.empty()) {
-        _propertiesInTableOrder.resize(_properties.count, nil);
-        for (RLMProperty *property in _properties) {
-            auto col = property.column;
-            if (col >= _propertiesInTableOrder.size()) {
-                _propertiesInTableOrder.resize(col + 1, nil);
-            }
-            _propertiesInTableOrder[col] = property;
-        }
-    }
-
-    return tableCol < _propertiesInTableOrder.size() ? _propertiesInTableOrder[tableCol] : nil;
 }
 
 - (NSArray *)swiftGenericProperties {

@@ -18,9 +18,52 @@
 
 #import <Realm/RLMObjectSchema.h>
 
+@class RLMRealm;
+
+#ifdef __cplusplus
+
+#import <objc/runtime.h>
+#import <vector>
+
+namespace realm {
+    struct Property;
+    class ObjectSchema;
+    class Table;
+}
+
+class RLMObservationInfo;
+
 NS_ASSUME_NONNULL_BEGIN
 
-@class RLMRealm;
+struct RLMPropertyInfo {
+    __unsafe_unretained RLMProperty *rlmProperty;
+    realm::Property *property;
+};
+
+struct RLMObjectInfo {
+    __unsafe_unretained RLMRealm *realm;
+    __unsafe_unretained RLMObjectSchema *rlmObjectSchema;
+
+    realm::ObjectSchema *objectSchema;
+    std::vector<RLMPropertyInfo> properties;
+
+    mutable realm::Table *_Nullable _table;
+    std::vector<RLMObservationInfo *> observedObjects;
+
+    realm::Table *_Nullable table() const;
+    RLMProperty *propertyForTableColumn(NSUInteger) const;
+    NSUInteger tableColumn(NSString *propertyName) const;
+    NSUInteger tableColumn(RLMProperty *property) const;
+};
+
+#else // __cplusplus
+
+NS_ASSUME_NONNULL_BEGIN
+
+typedef struct RLMPropertyInfo RLMPropertyInfo;
+typedef struct RLMObjectInfo RLMObjectInfo;
+
+#endif // __cplusplus
 
 // RLMObjectSchema private
 @interface RLMObjectSchema () {
@@ -46,9 +89,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, unsafe_unretained, nullable) RLMRealm *realm;
 // returns a cached or new schema for a given object class
 + (instancetype)schemaForObjectClass:(Class)objectClass;
-
-- (RLMProperty *)propertyForTableColumn:(size_t)tableCol;
-
 @end
 
 @interface RLMObjectSchema (Dynamic)
