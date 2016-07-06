@@ -67,7 +67,11 @@ NS_ASSUME_NONNULL_BEGIN
 
  @return The default `RLMRealm` instance for the current thread.
  */
-+ (instancetype)defaultRealm;
+- (nonnull instancetype)init
+NS_SWIFT_UNAVAILABLE("do not initialize directly");
+
++ (instancetype)defaultRealm
+NS_SWIFT_NAME(init());
 
 /**
  Obtains an `RLMRealm` instance with the given configuration.
@@ -102,7 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
             created, updated, or removed. Doing so might cause a large number of write transactions to be created,
             degrading performance. Instead, always prefer performing multiple updates during a single transaction.
  */
-@property (nonatomic, readonly) BOOL inWriteTransaction;
+@property (nonatomic, readonly) BOOL inWriteTransaction
+NS_SWIFT_NAME(isInWriteTransaction);
 
 /**
  The `RLMRealmConfiguration` object that was used to create this `RLMRealm` instance.
@@ -177,7 +182,8 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
  Realm participating in the write transaction is kept alive until the write transaction
  is committed.
  */
-- (void)beginWriteTransaction;
+- (void)beginWriteTransaction
+NS_SWIFT_NAME(beginWrite());
 
 /**
  Commits all write operations in the current write transaction, and ends the 
@@ -185,7 +191,8 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 
  @warning This method may only be called during a write transaction.
  */
-- (void)commitWriteTransaction NS_SWIFT_UNAVAILABLE("");
+- (void)commitWriteTransaction
+NS_SWIFT_UNAVAILABLE("use throwing variant");
 
 /**
  Commits all write operations in the current write transaction, and ends the
@@ -199,7 +206,8 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 
  @return Whether the transaction succeeded.
  */
-- (BOOL)commitWriteTransaction:(NSError **)error;
+- (BOOL)commitWriteTransaction:(NSError **)error
+NS_SWIFT_NAME(commitWrite());
 
 /**
  Reverts all writes made during the current write transaction and ends the transaction.
@@ -226,14 +234,16 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 
  @warning This method may only be called during a write transaction.
  */
-- (void)cancelWriteTransaction;
+- (void)cancelWriteTransaction
+NS_SWIFT_NAME(cancelWrite());
 
 /**
  Performs actions contained within the given block inside a write transaction.
  
  @see `[RLMRealm transactionWithBlock:error:]`
  */
-- (void)transactionWithBlock:(__attribute__((noescape)) void(^)(void))block NS_SWIFT_UNAVAILABLE("");
+- (void)transactionWithBlock:(__attribute__((noescape)) void(^)(void))block
+NS_SWIFT_NAME(write(_:)) NS_SWIFT_UNAVAILABLE("use throwing variant");
 
 /**
  Performs actions contained within the given block inside a write transaction.
@@ -255,7 +265,8 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 
  @return Whether the transaction succeeded.
  */
-- (BOOL)transactionWithBlock:(__attribute__((noescape)) void(^)(void))block error:(NSError **)error;
+- (BOOL)transactionWithBlock:(__attribute__((noescape)) void(^)(void))block error:(NSError **)error
+NS_SWIFT_NAME(write(_:));
 
 /**
  Updates the Realm and outstanding objects managed by the Realm to point to the most recent data.
@@ -294,7 +305,8 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 
  Defaults to `YES`.
  */
-@property (nonatomic) BOOL autorefresh;
+@property (nonatomic) BOOL autorefresh
+NS_SWIFT_NAME(shouldAutorefresh);
 
 /**
  Writes a compacted and optionally encrypted copy of the Realm to the given local URL.
@@ -312,7 +324,8 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 
  @return `YES` if the Realm was successfully written to disk, `NO` if an error occurred.
 */
-- (BOOL)writeCopyToURL:(NSURL *)fileURL encryptionKey:(nullable NSData *)key error:(NSError **)error;
+- (BOOL)writeCopyToURL:(NSURL *)fileURL encryptionKey:(nullable NSData *)key error:(NSError **)error
+NS_SWIFT_NAME(writeCopy(toFile:withEncryptionKey:));
 
 /**
  Invalidates all `RLMObject`s, `RLMResults`, `RLMLinkingObjects`, and `RLMArray`s managed by the Realm.

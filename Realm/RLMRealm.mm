@@ -105,6 +105,10 @@ NSData *RLMRealmValidatedEncryptionKey(NSData *key) {
     NSHashTable *_collectionEnumerators;
 }
 
+- (instancetype)init {
+    return [super init];
+}
+
 + (BOOL)isCoreDebug {
     return realm::Version::has_feature(realm::feature_Debug);
 }

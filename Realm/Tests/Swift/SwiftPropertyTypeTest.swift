@@ -32,11 +32,11 @@ class SwiftPropertyTypeTest: RLMTestCase {
         
         let realm = realmWithTestPath()
         
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         SwiftLongObject.createInRealm(realm, withValue: [NSNumber(longLong: longNumber)])
         SwiftLongObject.createInRealm(realm, withValue: [NSNumber(longLong: intNumber)])
         SwiftLongObject.createInRealm(realm, withValue: [NSNumber(longLong: negativeLongNumber)])
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
         
         let objects = SwiftLongObject.allObjectsInRealm(realm)
         XCTAssertEqual(objects.count, UInt(3), "3 rows expected")
@@ -44,9 +44,9 @@ class SwiftPropertyTypeTest: RLMTestCase {
         XCTAssertEqual((objects[1] as! SwiftLongObject).longCol, intNumber, "2 ^ 31 - 1 expected")
         XCTAssertEqual((objects[2] as! SwiftLongObject).longCol, negativeLongNumber, "-2 ^ 34 expected")
         
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         (objects[0] as! SwiftLongObject).longCol = updatedLongNumber
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
         
         XCTAssertEqual((objects[0] as! SwiftLongObject).longCol, updatedLongNumber, "After update: 2 ^ 33 expected")
     }
@@ -59,7 +59,7 @@ class SwiftPropertyTypeTest: RLMTestCase {
         let v32 = Int32(1) << 30
         // 1 << 40 doesn't auto-promote to Int64 on 32-bit platforms
         let v64 = Int64(1) << 40
-        try! realm.transactionWithBlock() {
+        try! realm.write {
             let obj = SwiftAllIntSizesObject()
 
             obj.int8  = v8
@@ -88,7 +88,7 @@ class SwiftPropertyTypeTest: RLMTestCase {
         let v32 = Int32(1) << 30
         // 1 << 40 doesn't auto-promote to Int64 on 32-bit platforms
         let v64 = Int64(1) << 40
-        try! realm.transactionWithBlock() {
+        try! realm.write {
             let obj = AllIntSizesObject()
 
             obj.int16 = v16
@@ -109,7 +109,7 @@ class SwiftPropertyTypeTest: RLMTestCase {
 
     func testLazyVarProperties() {
         let realm = realmWithTestPath()
-        let succeeded : Void? = try? realm.transactionWithBlock() {
+        let succeeded : Void? = try? realm.write {
             realm.addObject(SwiftLazyVarObject())
         }
         XCTAssertNotNil(succeeded, "Writing an NSObject-based object with an lazy property should work.")
@@ -117,7 +117,7 @@ class SwiftPropertyTypeTest: RLMTestCase {
 
     func testIgnoredLazyVarProperties() {
         let realm = realmWithTestPath()
-        let succeeded : Void? = try? realm.transactionWithBlock() {
+        let succeeded : Void? = try? realm.write {
             realm.addObject(SwiftIgnoredLazyVarObject())
         }
         XCTAssertNotNil(succeeded, "Writing an object with an ignored lazy property should work.")

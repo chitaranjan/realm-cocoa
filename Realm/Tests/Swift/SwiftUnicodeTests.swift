@@ -30,9 +30,9 @@ class SwiftUnicodeTests: RLMTestCase {
 
     func testUTF8StringContents() {
         let realm = realmWithTestPath()
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         SwiftStringObject.createInRealm(realm, withValue: [utf8TestString])
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let obj1 = SwiftStringObject.allObjectsInRealm(realm).firstObject() as! SwiftStringObject
         XCTAssertEqual(obj1.stringCol, utf8TestString, "Storing and retrieving a string with UTF8 content should work")
@@ -43,9 +43,9 @@ class SwiftUnicodeTests: RLMTestCase {
 
     func testUTF8PropertyWithUTF8StringContents() {
         let realm = realmWithTestPath()
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         SwiftUTF8Object.createInRealm(realm, withValue: [utf8TestString])
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let obj1 = SwiftUTF8Object.allObjectsInRealm(realm).firstObject() as! SwiftUTF8Object
         XCTAssertEqual(obj1.柱колоéнǢкƱаم👍, utf8TestString, "Storing and retrieving a string with UTF8 content should work")
@@ -59,9 +59,9 @@ class SwiftUnicodeTests: RLMTestCase {
 
     func testUTF8StringContents_objc() {
         let realm = realmWithTestPath()
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         StringObject.createInRealm(realm, withValue: [utf8TestString])
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let obj1 = StringObject.allObjectsInRealm(realm).firstObject() as! StringObject
         XCTAssertEqual(obj1.stringCol, utf8TestString, "Storing and retrieving a string with UTF8 content should work")
@@ -72,9 +72,9 @@ class SwiftUnicodeTests: RLMTestCase {
 
     func testUTF8PropertyWithUTF8StringContents_objc() {
         let realm = realmWithTestPath()
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         UTF8Object.createInRealm(realm, withValue: [utf8TestString])
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let obj1 = UTF8Object.allObjectsInRealm(realm).firstObject() as! UTF8Object
         XCTAssertEqual(obj1.柱колоéнǢкƱаم, utf8TestString, "Storing and retrieving a string with UTF8 content should work")

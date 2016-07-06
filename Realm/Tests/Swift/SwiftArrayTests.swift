@@ -30,7 +30,7 @@ class SwiftArrayTests: RLMTestCase {
     func testFastEnumeration() {
         let realm = realmWithTestPath()
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
 
         let dateMinInput = NSDate()
         let dateMaxInput = dateMinInput.dateByAddingTimeInterval(1000)
@@ -46,7 +46,7 @@ class SwiftArrayTests: RLMTestCase {
         SwiftAggregateObject.createInRealm(realm, withValue: [10, 1.2 as Float, 0 as Double, true, dateMinInput])
         SwiftAggregateObject.createInRealm(realm, withValue: [10, 1.2 as Float, 0 as Double, true, dateMinInput])
 
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let result = SwiftAggregateObject.objectsInRealm(realm, "intCol < %d", 100)
         XCTAssertEqual(result.count, UInt(10), "10 objects added")
@@ -65,7 +65,7 @@ class SwiftArrayTests: RLMTestCase {
     func testObjectAggregate() {
         let realm = realmWithTestPath()
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
 
         let dateMinInput = NSDate()
         let dateMaxInput = dateMinInput.dateByAddingTimeInterval(1000)
@@ -81,7 +81,7 @@ class SwiftArrayTests: RLMTestCase {
         SwiftAggregateObject.createInRealm(realm, withValue: [0, 1.2 as Float, 0 as Double, true, dateMinInput])
         SwiftAggregateObject.createInRealm(realm, withValue: [0, 1.2 as Float, 0 as Double, true, dateMinInput])
 
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let noArray = SwiftAggregateObject.objectsInRealm(realm, "boolCol == NO")
         let yesArray = SwiftAggregateObject.objectsInRealm(realm, "boolCol == YES")
@@ -166,7 +166,7 @@ class SwiftArrayTests: RLMTestCase {
     func testArrayDescription() {
         let realm = realmWithTestPath()
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
 
         for _ in 0..<1012 {
             let person = SwiftEmployeeObject()
@@ -176,7 +176,7 @@ class SwiftArrayTests: RLMTestCase {
             realm.addObject(person)
         }
 
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let description = SwiftEmployeeObject.allObjectsInRealm(realm).description
 
@@ -192,7 +192,7 @@ class SwiftArrayTests: RLMTestCase {
     func testDeleteLinksAndObjectsInArray() {
         let realm = realmWithTestPath()
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
 
         let po1 = SwiftEmployeeObject()
         po1.age = 40
@@ -217,14 +217,14 @@ class SwiftArrayTests: RLMTestCase {
         realm.addObject(company)
         company.employees.addObjects(SwiftEmployeeObject.allObjectsInRealm(realm))
 
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let peopleInCompany = company.employees
         XCTAssertEqual(peopleInCompany.count, UInt(3), "No links should have been deleted")
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         peopleInCompany.removeObjectAtIndex(1) // Should delete link to employee
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         XCTAssertEqual(peopleInCompany.count, UInt(2), "link deleted when accessing via links")
 
@@ -240,7 +240,7 @@ class SwiftArrayTests: RLMTestCase {
         XCTAssertEqual(test.hired, po3.hired, "Should be equal")
         // XCTAssertEqual(test, po3, "Should be equal") //FIXME, should work. Asana : https://app.asana.com/0/861870036984/13123030433568
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         peopleInCompany.removeLastObject()
         XCTAssertEqual(peopleInCompany.count, UInt(1), "1 remaining link")
         peopleInCompany.replaceObjectAtIndex(0, withObject: po2)
@@ -249,7 +249,7 @@ class SwiftArrayTests: RLMTestCase {
         XCTAssertEqual(peopleInCompany.count, UInt(2), "2 links")
         peopleInCompany.removeAllObjects()
         XCTAssertEqual(peopleInCompany.count, UInt(0), "0 remaining links")
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
     }
 
     // Objective-C models
@@ -257,7 +257,7 @@ class SwiftArrayTests: RLMTestCase {
     func testFastEnumeration_objc() {
         let realm = realmWithTestPath()
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
 
         let dateMinInput = NSDate()
         let dateMaxInput = dateMinInput.dateByAddingTimeInterval(1000)
@@ -273,7 +273,7 @@ class SwiftArrayTests: RLMTestCase {
         AggregateObject.createInRealm(realm, withValue: [10, 1.2 as Float, 0 as Double, true, dateMinInput])
         AggregateObject.createInRealm(realm, withValue: [10, 1.2 as Float, 0 as Double, true, dateMinInput])
 
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let result = AggregateObject.objectsInRealm(realm, "intCol < %d", 100)
         XCTAssertEqual(result.count, UInt(10), "10 objects added")
@@ -292,7 +292,7 @@ class SwiftArrayTests: RLMTestCase {
     func testObjectAggregate_objc() {
         let realm = realmWithTestPath()
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
 
         let dateMinInput = NSDate()
         let dateMaxInput = dateMinInput.dateByAddingTimeInterval(1000)
@@ -308,7 +308,7 @@ class SwiftArrayTests: RLMTestCase {
         AggregateObject.createInRealm(realm, withValue: [0, 1.2 as Float, 0 as Double, true, dateMinInput])
         AggregateObject.createInRealm(realm, withValue: [0, 1.2 as Float, 0 as Double, true, dateMinInput])
 
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let noArray = AggregateObject.objectsInRealm(realm, "boolCol == NO")
         let yesArray = AggregateObject.objectsInRealm(realm, "boolCol == YES")
@@ -393,7 +393,7 @@ class SwiftArrayTests: RLMTestCase {
     func testArrayDescription_objc() {
         let realm = realmWithTestPath()
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
 
         for _ in 0..<1012 {
             let person = EmployeeObject()
@@ -403,7 +403,7 @@ class SwiftArrayTests: RLMTestCase {
             realm.addObject(person)
         }
 
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let description = EmployeeObject.allObjectsInRealm(realm).description
         XCTAssertTrue((description as NSString).rangeOfString("name").location != Foundation.NSNotFound, "property names should be displayed when calling \"description\" on RLMArray")
@@ -427,7 +427,7 @@ class SwiftArrayTests: RLMTestCase {
     func testDeleteLinksAndObjectsInArray_objc() {
         let realm = realmWithTestPath()
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
 
         let po1 = makeEmployee(realm, 40, "Joe", true)
         _ = makeEmployee(realm, 30, "John", false)
@@ -438,14 +438,14 @@ class SwiftArrayTests: RLMTestCase {
         realm.addObject(company)
         company.employees.addObjects(EmployeeObject.allObjectsInRealm(realm))
 
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let peopleInCompany = company.employees
         XCTAssertEqual(peopleInCompany.count, UInt(3), "No links should have been deleted")
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         peopleInCompany.removeObjectAtIndex(1) // Should delete link to employee
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         XCTAssertEqual(peopleInCompany.count, UInt(2), "link deleted when accessing via links")
 
@@ -468,11 +468,11 @@ class SwiftArrayTests: RLMTestCase {
     func testIndexOfObject_objc() {
         let realm = realmWithTestPath()
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         let po1 = makeEmployee(realm, 40, "Joe", true)
         let po2 = makeEmployee(realm, 30, "John", false)
         let po3 = makeEmployee(realm, 25, "Jill", true)
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let results = EmployeeObject.objectsInRealm(realm, "hired = YES")
         XCTAssertEqual(UInt(2), results.count)
@@ -484,11 +484,11 @@ class SwiftArrayTests: RLMTestCase {
     func testIndexOfObjectWhere_objc() {
         let realm = realmWithTestPath()
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         makeEmployee(realm, 40, "Joe", true)
         makeEmployee(realm, 30, "John", false)
         makeEmployee(realm, 25, "Jill", true)
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let results = EmployeeObject.objectsInRealm(realm, "hired = YES")
         XCTAssertEqual(UInt(2), results.count)
@@ -500,11 +500,11 @@ class SwiftArrayTests: RLMTestCase {
     func testSortingExistingQuery_objc() {
         let realm = realmWithTestPath()
 
-        realm.beginWriteTransaction()
+        realm.beginWrite()
         makeEmployee(realm, 20, "A", true)
         makeEmployee(realm, 30, "B", false)
         makeEmployee(realm, 40, "C", true)
-        try! realm.commitWriteTransaction()
+        try! realm.commitWrite()
 
         let sortedByAge = EmployeeObject.allObjectsInRealm(realm).sortedResultsUsingProperty("age", ascending: true)
         let sortedByName = sortedByAge.sortedResultsUsingProperty("name", ascending: false)
